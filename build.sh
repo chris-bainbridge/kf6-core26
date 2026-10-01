@@ -28,7 +28,7 @@ if [[ -z ${SDK_SNAP} || ! -e ${SDK_SNAP} ]]; then
 fi
 
 VERSION=6.11.1-6.30.0-6.7.5-26.04.2
-OUT="kf6-core26_${VERSION}_amd64.snap"
+OUT="kf6-core26.snap"
 
 rm -rf sdk-root content-root "${OUT}"
 mkdir -p content-root
