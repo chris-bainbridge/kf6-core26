@@ -1,0 +1,307 @@
+name: kf6-core26
+base: core26
+summary: KDE Frameworks 6
+description: |
+  Runtime content snap providing the KF6 and Qt6 runtime for the
+  plasma-desktop-session snap.
+
+  Built by staging runtime packages from the KDE Neon unstable/resolute
+  apt suite (same version train the previous from-source SDK build
+  produced: Qt 6.11.1 / KF6 6.30 / Plasma 6.7.5), plus xkb/locale data
+  from the resolute archive so libxkbcommon matches the core26 base
+  byte-for-byte (the noble-built store kf6-core24 mismatched it and
+  SIGSEGV'd ksmserver -- see notes/library/kde.txt).
+
+  Package set derived by mapping the file inventory of the last
+  from-source build onto the Neon suite's Contents index; build-time-only
+  content the SDK merge used to carry (~74k files of nodejs/ghc/llvm/
+  cmake/header cruft) is intentionally gone.
+
+grade: stable
+confinement: strict
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+
+# Neon's arm64 coverage in the unstable/resolute suite is incomplete
+# (no kwin/plasma binaries), so this deb-repack branch is amd64-only.
+# The desktop/26 from-source branch keeps arm64.
+
+adopt-info: kf6-runtime
+
+environment:
+  LD_LIBRARY_PATH: ${SNAP_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}:$SNAP/lib:$SNAP/usr/lib:$SNAP/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}:$SNAP/usr/lib/${CRAFT_ARCH_TRIPLET_BUILD_FOR}
+  PATH: $SNAP/usr/sbin:$SNAP/usr/bin:$SNAP/sbin:$SNAP/bin:$PATH
+
+slots:
+  kf6-core26-slot:
+    content: kf6-core26-all
+    interface: content
+    read:
+    - .
+  kf6-core26:
+    content: kf6-core26
+    interface: content
+    read:
+    - .
+
+package-repositories:
+-   type: apt
+    components:
+    - main
+    suites:
+    - resolute
+    key-id: 444DABCF3667D0283F894EDDE6D4736255751E5D
+    key-server: keyserver.ubuntu.com
+    url: http://origin.archive.neon.kde.org/unstable
+
+parts:
+  kf6-runtime:
+    plugin: nil
+    # Unpinned on purpose: floating tracks Neon latest so security fixes
+    # arrive automatically; the image build snapshots whatever the suite
+    # had at build time. A temporary `=` pin is the emergency brake if a
+    # Neon rollout breaks this build. go-build-kde checks the resolved
+    # Qt/KF6 versions against plasma-core26-desktop to catch skew.
+    stage-packages:
+      # KF6/Qt runtime content staged from the KDE Neon unstable/resolute suite
+      - kdegames-card-data-kf6
+      - kdsoap-ws-discovery-client
+      - kf6-attica
+      - kf6-baloo
+      - kf6-bluez-qt
+      - kf6-breeze-icon-theme
+      - kf6-frameworkintegration
+      - kf6-karchive
+      - kf6-kauth
+      - kf6-kbookmarks
+      - kf6-kcalendarcore
+      - kf6-kcmutils
+      - kf6-kcodecs
+      - kf6-kcolorscheme
+      - kf6-kcompletion
+      - kf6-kconfig
+      - kf6-kconfigwidgets
+      - kf6-kcontacts
+      - kf6-kcoreaddons
+      - kf6-kcrash
+      - kf6-kdav
+      - kf6-kdbusaddons
+      - kf6-kdeclarative
+      - kf6-kded
+      - kf6-kdesu
+      - kf6-kdnssd
+      - kf6-kdoctools
+      - kf6-kfilemetadata
+      - kf6-kglobalaccel
+      - kf6-kguiaddons
+      - kf6-kholidays
+      - kf6-ki18n
+      - kf6-kiconthemes
+      - kf6-kidletime
+      - kf6-kimageformat-plugins
+      - kf6-kio
+      - kf6-kirigami
+      - kf6-kirigami-addons
+      - kf6-kitemmodels
+      - kf6-kitemviews
+      - kf6-kjobwidgets
+      - kf6-knewstuff
+      - kf6-knotifications
+      - kf6-knotifyconfig
+      - kf6-kpackage
+      - kf6-kparts
+      - kf6-kpeople
+      - kf6-kplotting
+      - kf6-kpty
+      - kf6-kquickcharts
+      - kf6-krunner
+      - kf6-kservice
+      - kf6-kstatusnotifieritem
+      - kf6-ksvg
+      - kf6-ktextaddons
+      - kf6-ktexteditor
+      - kf6-ktexttemplate
+      - kf6-ktextwidgets
+      - kf6-kunitconversion
+      - kf6-kuserfeedback
+      - kf6-kwallet
+      - kf6-kwidgetsaddons
+      - kf6-kwindowsystem
+      - kf6-kxmlgui
+      - kf6-modemmanager-qt
+      - kf6-networkmanager-qt
+      - kf6-oxygen-icon-theme
+      - kf6-prison
+      - kf6-purpose
+      - kf6-qqc2-desktop-style
+      - kf6-solid
+      - kf6-sonnet
+      - kf6-syntax-highlighting
+      - kf6-threadweaver
+      - khelpcenter
+      - kio-extras
+      - kwayland
+      - libdbusmenu-qt6-2
+      - libdrm-amdgpu1
+      - libdrm-intel1
+      - libdrm-nouveau2
+      - libdrm-radeon1
+      - libkdsoap2-qt6
+      - libkdsoap-server2-qt6
+      - libkexiv2
+      - libkf6kdegames6-6
+      - libkf6kdegames6private6
+      - libpolkit-qt6-1-1
+      - libqt6keychain1
+      - libsnapd-glib-2-1
+      - libwayland-client0
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libwayland-server0
+      - plasma-activities
+      - plasma-activities-stats
+      - qca-qt6-utils
+      - qt6-3d
+      - qt6-5compat
+      - qt6-base
+      - qt6-canvaspainter
+      - qt6-charts
+      - qt6-coap
+      - qt6-connectivity
+      - qt6-datavis3d
+      - qt6-declarative
+      - qt6-graphs
+      - qt6-grpc
+      - qt6-httpserver
+      - qt6-imageformats
+      - qt6-languageserver
+      - qt6-location
+      - qt6-lottie
+      - qt6-mqtt
+      - qt6-multimedia
+      - qt6-networkauth
+      - qt6-opcua
+      - qt6-phonon
+      - qt6-phonon-backend-vlc
+      - qt6-positioning
+      - qt6-quick3d
+      - qt6-quick3dphysics
+      - qt6-quickeffectmaker
+      - qt6-quicktimeline
+      - qt6-remoteobjects
+      - qt6-scxml
+      - qt6-sensors
+      - qt6-serialbus
+      - qt6-serialport
+      - qt6-shadertools
+      - qt6-speech
+      - qt6-svg
+      - qt6-tasktree
+      - qt6-tools
+      - qt6-translations
+      - qt6-virtualkeyboard
+      - qt6-wayland
+      - qt6-webchannel
+      - qt6-webengine
+      - qt6-websockets
+      - qt6-webview
+      # resolute archive: X11 keymap + locale data (XKB_CONFIG_ROOT/XLOCALEDIR targets)
+      - xkb-data
+      - libx11-data
+      # xkbcomp — Xwayland execs it at the ABSOLUTE path /usr/bin/xkbcomp
+      # to compile keymaps; without it Xwayland dies with "Failed to
+      # activate virtual core keyboard", kwin disables Xwayland after 4
+      # crashes, and every X client (incl. ksmserver's X connect) hangs
+      # on the orphaned X socket. The layout: in the session snap points
+      # /usr/bin/xkbcomp at $SNAP/kf6/usr/bin/xkbcomp. x11-xkb-utils is
+      # an Ubuntu package, so the Neon-Contents mapping of the old SDK
+      # inventory could not see it (it sat in the unmapped-files set).
+      - x11-xkb-utils
+    override-pull: |
+      # craft injects http_proxy into the process env, but python-apt's
+      # fetch methods ignore the env and read apt.conf only -- without
+      # this file the deb downloads bypass the caching proxy entirely.
+      # On CI there is no http_proxy env and apt goes direct.
+      if [ -n "${http_proxy:-}" ]; then
+          printf 'Acquire::http::Proxy "%s";\n' "$http_proxy" \
+              > /etc/apt/apt.conf.d/95proxy
+      fi
+      craftctl set version="$(/bin/date +%Y%m%d)-deb"
+      craftctl default
+    override-prime: |
+      # A previous prime's dereference leaves a real directory where the
+      # stage has a symlink; re-priming then fails with IsADirectoryError
+      # copying the symlink over the directory. Clear the leftover first
+      # so the default prime sync succeeds.
+      if [ -d "$SNAPCRAFT_PRIME/usr/share/X11/xkb" ] && \
+         [ ! -L "$SNAPCRAFT_PRIME/usr/share/X11/xkb" ]; then
+          rm -rf "$SNAPCRAFT_PRIME/usr/share/X11/xkb"
+      fi
+      craftctl default
+      # On resolute, xkb-data ships /usr/share/X11/xkb as a relative
+      # symlink to the real xkeyboard-config-2 directory (mirroring the
+      # base). The session snap points XKB_CONFIG_ROOT at
+      # $SNAP/kf6/usr/share/X11/xkb, and the old build.sh dereferenced the
+      # symlink when copying from the host ("cp -aL"), so the content snap
+      # always carried a real directory. Keep that layout: replace the
+      # primed symlink with a dereferenced copy. This must happen AFTER
+      # craftctl default -- craft's prime step walks the stage layer
+      # manifest and chokes (IsADirectoryError) if the deb-shipped symlink
+      # is replaced by a directory at stage time. The prime tree is
+      # self-contained (xkeyboard-config-2 is primed too), so resolve the
+      # target within it and refuse anything that escapes.
+      if [ -L "$SNAPCRAFT_PRIME/usr/share/X11/xkb" ]; then
+          target="$(readlink -f "$SNAPCRAFT_PRIME/usr/share/X11/xkb")"
+          case "$target" in
+              "$SNAPCRAFT_PRIME"/*) ;;
+              *) echo "xkb symlink target escaped the prime tree: $target" >&2; exit 1 ;;
+          esac
+          rm "$SNAPCRAFT_PRIME/usr/share/X11/xkb"
+          cp -a "$target" "$SNAPCRAFT_PRIME/usr/share/X11/xkb"
+      fi
+      # libproxy.so.1 has DT_NEEDED libpxbackend-1.0.so, but that file
+      # ships in a libproxy/ SUBDIRECTORY that is only reachable via
+      # libproxy.so.1's absolute RUNPATH (/usr/lib/<triplet>/libproxy).
+      # Inside the session snap's namespace that path is hidden by the
+      # session snap's own /usr overlay, so the backend is not loadable
+      # and startplasma-wayland dies with exit 127 (SDDM login loops).
+      # Expose it at a top-level, searchable path: this snap's
+      # usr/lib/<triplet> is on the session's LD_LIBRARY_PATH and is
+      # always visible (it is the content mount the session resolves
+      # libproxy.so.1 from in the first place). amd64-only branch, so the
+      # triplet is fixed.
+      libproxy_dir="$SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/libproxy"
+      if [ -f "$libproxy_dir/libpxbackend-1.0.so" ] && \
+         [ ! -e "$SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/libpxbackend-1.0.so" ]; then
+          ln -s libproxy/libpxbackend-1.0.so \
+             "$SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/libpxbackend-1.0.so"
+      fi
+      # Same class as libpxbackend: libpulse.so.0 has DT_NEEDED
+      # libpulsecommon-17.0.so, shipped in the pulseaudio/ SUBDIRECTORY and
+      # reachable only via libpulse.so.1's absolute RUNPATH
+      # (/usr/lib/<triplet>/pulseaudio) -- hidden inside the session
+      # namespace, and the base ships no pulseaudio stack at all. Without
+      # it every pulseaudio-linked app (dolphin, ...) dies with
+      # "error while loading shared libraries: libpulsecommon-17.0.so".
+      pulse_dir="$SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/pulseaudio"
+      if [ -f "$pulse_dir/libpulsecommon-17.0.so" ] && \
+         [ ! -e "$SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/libpulsecommon-17.0.so" ]; then
+          ln -s pulseaudio/libpulsecommon-17.0.so \
+             "$SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/libpulsecommon-17.0.so"
+      fi
+      # Record the resolved Neon/resolute deb set (name + version) inside
+      # the snap. go-build-kde compares this manifest between kf6-core26
+      # and plasma-core26-desktop to catch Qt/KF6 version skew from
+      # rebuilding one content snap without the other.
+      mkdir -p "$SNAPCRAFT_PRIME/meta"
+      : > "$SNAPCRAFT_PRIME/meta/pkg-manifest.txt"
+      for deb in /root/parts/kf6-runtime/stage_packages/*.deb \
+                 "$CRAFT_PART_INSTALL/../stage_packages"/*.deb; do
+          [ -e "$deb" ] || continue
+          dpkg-deb -f "$deb" Package Version \
+              | paste - - | sed 's/^Package: //; s/\tVersion: / /' \
+              >> "$SNAPCRAFT_PRIME/meta/pkg-manifest.txt"
+      done
+      sort -u -o "$SNAPCRAFT_PRIME/meta/pkg-manifest.txt" "$SNAPCRAFT_PRIME/meta/pkg-manifest.txt"
