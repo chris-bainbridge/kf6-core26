@@ -2,7 +2,7 @@
 # Build the kf6-core26 runtime content snap.
 #
 # Since the deb-repack conversion this is a plain snapcraft build that
-# stages runtime packages from the KDE Neon unstable/resolute apt suite
+# stages runtime packages from the KDE Neon release/resolute apt suite
 # (see snapcraft.yaml) instead of deriving the snap from the locally
 # built kf6-core26-sdk.
 

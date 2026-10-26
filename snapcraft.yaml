@@ -5,9 +5,9 @@ description: |
   Runtime content snap providing the KF6 and Qt6 runtime for the
   plasma-desktop-session snap.
 
-  Built by staging runtime packages from the KDE Neon unstable/resolute
-  apt suite (same version train the previous from-source SDK build
-  produced: Qt 6.11.1 / KF6 6.30 / Plasma 6.7.5), plus xkb/locale data
+  Built by staging runtime packages from the KDE Neon release/resolute
+  apt suite (upstream release train: Plasma 6.8.0 / KF6 6.31.0 /
+  Qt 6.11.1), plus xkb/locale data
   from the resolute archive so libxkbcommon matches the core26 base
   byte-for-byte (the noble-built store kf6-core24 mismatched it and
   SIGSEGV'd ksmserver -- see notes/library/kde.txt).
@@ -24,9 +24,9 @@ platforms:
     build-on: [amd64]
     build-for: [amd64]
 
-# Neon's arm64 coverage in the unstable/resolute suite is incomplete
-# (no kwin/plasma binaries), so this deb-repack branch is amd64-only.
-# The desktop/26 from-source branch keeps arm64.
+# Neon's resolute suites (release and unstable) have incomplete
+# arm64 coverage (no kwin/plasma binaries), so this deb-repack branch
+# is amd64-only. The desktop/26 from-source branch keeps arm64.
 
 adopt-info: kf6-runtime
 
@@ -58,7 +58,7 @@ package-repositories:
     # failure", 2026-10-14). hkp on :80 still works and is the same URL
     # craft-archives uses as its own fallback keyserver.
     key-server: hkp://keyserver.ubuntu.com:80
-    url: http://origin.archive.neon.kde.org/unstable
+    url: http://origin.archive.neon.kde.org/release
 
 parts:
   kf6-runtime:
