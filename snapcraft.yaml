@@ -6,11 +6,12 @@ description: |
   plasma-desktop-session snap.
 
   Built by staging runtime packages from the KDE Neon release/resolute
-  apt suite (upstream release train: Plasma 6.8.0 / KF6 6.31.0 /
-  Qt 6.11.1), plus xkb/locale data
+  apt suite (the upstream release train), plus xkb/locale data
   from the resolute archive so libxkbcommon matches the core26 base
   byte-for-byte (the noble-built store kf6-core24 mismatched it and
-  SIGSEGV'd ksmserver -- see notes/library/kde.txt).
+  SIGSEGV'd ksmserver -- see notes/library/kde.txt). The suite floats:
+  the exact package versions of each build are recorded in
+  meta/pkg-manifest.txt inside the snap.
 
   Package set derived by mapping the file inventory of the last
   from-source build onto the Neon suite's Contents index; build-time-only
