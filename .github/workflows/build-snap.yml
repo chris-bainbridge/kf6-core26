@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - desktop/26
+  # The runtime floats on Neon's release/resolute suite, which moves
+  # independently of this repository: Qt/KF6 can roll forward without any
+  # commit here. A daily rebuild keeps the published snap reasonably
+  # fresh even when nobody is pushing (the dependents are rebuilt from
+  # this workflow, see the dispatch step below).
+  schedule:
+    - cron: '17 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -60,6 +67,33 @@ jobs:
                  --title "desktop/26 latest snap" \
                  --notes "Rolling latest desktop/26 snap build; assets are replaced on every green build."
           gh release upload desktop-26-latest kf6-core26.snap -R "$GITHUB_REPOSITORY" --clobber
+      - name: Rebuild the Plasma snaps against the new runtime
+        # kf6-core26 is the content snap that carries Qt/KF6; the Plasma
+        # snaps stage kwin/plasma binaries that link against it. When Neon
+        # rolls Qt forward, a rebuild here can leave them ABI-skewed (the
+        # 2026-11-21 incident: Qt 6.12 here against a kwin built for
+        # 6.11, every version manifest still green, the session
+        # crash-looping at boot). Rebuilding the dependents immediately
+        # keeps the published set consistent.
+        #
+        # A repository-scoped GITHUB_TOKEN cannot dispatch workflows into
+        # another repository, so this needs a fine-grained PAT with
+        # Actions: write on the two dependents (secret REBUILD_TOKEN).
+        # Without it we warn instead of failing, and the daily schedule in
+        # those repositories still converges the set.
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.REBUILD_TOKEN }}
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "::warning::REBUILD_TOKEN not set; skipping dependent rebuilds"
+            exit 0
+          fi
+          for repo in chris-bainbridge/plasma-core-desktop \
+                      chris-bainbridge/plasma-desktop-session; do
+            echo "==> dispatching build-snap on ${repo}"
+            gh workflow run build-snap.yml -R "${repo}" --ref desktop/26
+          done
       - uses: actions/upload-artifact@v6
         with:
           name: snap
